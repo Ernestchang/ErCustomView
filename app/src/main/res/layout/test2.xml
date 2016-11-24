@@ -2,15 +2,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="100dp"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
 
-    android:background="#AA333333" >
+    android:background="#AA333333">
 
-    <TextView
+    <com.ernest.ercustomview.view.ErIdentifyingCodeView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/id_txt"
-        
-		android:text="hello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\nhello\n"
-         />
+        custom:titleText="3712"
+        android:padding="10dp"
+        custom:titleTextColor="#ff0000"
+        android:layout_centerInParent="true"
+        custom:titleTextSize="40sp" />
 
 </RelativeLayout>
