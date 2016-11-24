@@ -13,7 +13,7 @@
         android:gravity="center"
         android:text="application_logo" />
 
-    <com.ernest.ercustomview.IcsLinearLayout
+    <com.ernest.ercustomview.view.ErIcsLinearLayout
         android:id="@+id/buttons_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,6 +45,6 @@
             android:layout_weight="1"
             android:background="#0000ff"
             android:text="button_3" />
-    </com.ernest.ercustomview.IcsLinearLayout>
+    </com.ernest.ercustomview.view.ErIcsLinearLayout>
 
 </LinearLayout>

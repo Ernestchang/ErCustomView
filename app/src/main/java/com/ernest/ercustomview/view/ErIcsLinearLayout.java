@@ -8,9 +8,15 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
-
+/**
+ *	Due to above sdk3.0,the LinearLayout get new porperties,such as divider,showDividers ect.
+ *	For compatible to below sdk3.0, this class is created.
+ *	1. as you known, you can add new properties to strong system's view.
+ *
+ */
 public class ErIcsLinearLayout extends LinearLayout
 {
+	// omit styleable, byself
 	private static final int[] LL = new int[]
 	{ //
 		android.R.attr.divider,//
@@ -27,11 +33,11 @@ public class ErIcsLinearLayout extends LinearLayout
 	 */
 	private Drawable mDivider;
 	/**
-	 * 对应：android:showDividers
+	 * android:showDividers
 	 */
 	private int mShowDividers;
 	/**
-	 * 对应：android:dividerPadding
+	 * android:dividerPadding
 	 */
 	private int mDividerPadding;
 
@@ -49,9 +55,7 @@ public class ErIcsLinearLayout extends LinearLayout
 		a.recycle();
 	}
 	
-	/**
-	 * 设置分隔元素，初始化宽高等
-	 */
+	// init divider width and height info
 	public void setDividerDrawable(Drawable divider)
 	{
 		if (divider == mDivider)
@@ -61,6 +65,7 @@ public class ErIcsLinearLayout extends LinearLayout
 		mDivider = divider;
 		if (divider != null)
 		{
+			// get drable width and height
 			mDividerWidth = divider.getIntrinsicWidth();
 			mDividerHeight = divider.getIntrinsicHeight();
 		} else
@@ -75,58 +80,55 @@ public class ErIcsLinearLayout extends LinearLayout
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
-		//将分隔元素的宽高转化为对应的margin
+		//transform divider to margin
 		setChildrenDivider();
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	}
 
-	/**
-	 * 将分隔元素的宽高转化为对应的margin
-	 */
+
 	protected void setChildrenDivider()
 	{
 		final int count = getChildCount();
 		for (int i = 0; i < count; i++)
 		{
-			//遍历每个子View
+			//go through every child
 			View child = getChildAt(i);
-			//拿到索引
+			//get the position of the child in parent
 			final int index = indexOfChild(child);
-			//方向
+			//orientation
 			final int orientation = getOrientation();
 		
 			final LayoutParams params = (LayoutParams) child.getLayoutParams();
-			//判断是否需要在子View左边绘制分隔
+			//fingure out whether should set divider
 			if (hasDividerBeforeChildAt(index))
 			{
 				if (orientation == VERTICAL)
 				{
-					//如果需要，则设置topMargin为分隔元素的高度（垂直时）
+					//save position to set divider
 					params.topMargin = mDividerHeight;
 				} else
 				{
-					//如果需要，则设置leftMargin为分隔元素的宽度（水平时）
+					//give the divider position to set
 					params.leftMargin = mDividerWidth;
 				}
 			}
 		}
 	}
 	
-	/**
-	 * 判断是否需要在子View左边绘制分隔
-	 */
+	// judge whether to set divider
 	public boolean hasDividerBeforeChildAt(int childIndex)
 	{
 		if (childIndex == 0 || childIndex == getChildCount())
 		{
 			return false;
 		}
+		// showDividers == middle in layout
 		if ((mShowDividers & SHOW_DIVIDER_MIDDLE) != 0)
 		{
 			boolean hasVisibleViewBefore = false;
 			for (int i = childIndex - 1; i >= 0; i--)
 			{
-				//当前index的前一个元素不为GONE则认为需要
+				// before this index has view to show
 				if (getChildAt(i).getVisibility() != GONE)
 				{
 					hasVisibleViewBefore = true;
@@ -146,11 +148,11 @@ public class ErIcsLinearLayout extends LinearLayout
 		{
 			if (getOrientation() == VERTICAL)
 			{
-				//绘制垂直方向的divider
+				//draw vertical divider
 				drawDividersVertical(canvas);
 			} else
 			{
-				//绘制水平方向的divider
+				//draw horizontal divider
 				drawDividersHorizontal(canvas);
 			}
 		}
@@ -158,30 +160,29 @@ public class ErIcsLinearLayout extends LinearLayout
 	}
 
 	/**
-	 * 绘制水平方向的divider
+	 * draw horizontal divider
 	 * @param canvas
 	 */
 	private void drawDividersHorizontal(Canvas canvas)
 	{
 		final int count = getChildCount();
-		//遍历所有的子View
+		// go through all child views
 		for (int i = 0; i < count; i++)
 		{
 			final View child = getChildAt(i);
 
 			if (child != null && child.getVisibility() != GONE)
 			{
-				//如果需要绘制divider
+				//if need to draw
 				if (hasDividerBeforeChildAt(i))
 				{
 					final LayoutParams lp = (LayoutParams) child
 							.getLayoutParams();
-					//得到开始的位置，getLeft为当前View的左侧，而左侧有margin，所以之差为divider绘制的开始区域
-					final int left = child.getLeft() - lp.leftMargin/*
-																	 * -
-																	 * mDividerWidth
-																	 */;
-					//绘制divider
+					// get the start position. through child.getLeft() get absolute x-coordination,
+					// then minus the relative value lp.leftMargin which is equal to the divider's
+					// width, last we get the absolute x-coordination of the divider left start.
+					final int left = child.getLeft() - lp.leftMargin;
+					//draw divider
 					drawVerticalDivider(canvas, left);
 				}
 			}
@@ -189,17 +190,17 @@ public class ErIcsLinearLayout extends LinearLayout
 	}
 	
 	/**
-	 * 绘制divider，根据left，水平方向绘制
+	 * due to left start x-coordination,draw the divider
 	 * @param canvas
 	 * @param left
 	 */
 	public void drawVerticalDivider(Canvas canvas, int left)
 	{
-		//设置divider的范围
+		//set the bounds of divider
 		mDivider.setBounds(left, getPaddingTop() + mDividerPadding, left
 				+ mDividerWidth, getHeight() - getPaddingBottom()
 				- mDividerPadding);
-		//绘制
+		//draw
 		mDivider.draw(canvas);
 	}
 	
